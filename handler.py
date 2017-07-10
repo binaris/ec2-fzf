@@ -1,9 +1,10 @@
 import json
-import boto3
 import os
+import boto3
 
-KEYS = "realm service Name".split(" ")
+KEYS = os.environ["tags"].split(" ")
 BUCKET = os.environ["bucket"]
+
 
 def extract_tag(instance_desc, tag):
     t = [t for t in instance_desc['Tags'] if t['Key'] == tag]
@@ -22,6 +23,7 @@ def extract_relevant_instance_info(instance_description):
         r[k] = extract_tag(i, k)
     return r
 
+
 def instances_by_region(region):
     try:
         ec2 = boto3.client('ec2', region_name=region)
@@ -38,9 +40,11 @@ def instances_by_region(region):
     except Exception as e:
         return []
 
+
 def instance_line(inst):
     keys = KEYS + "priv_ip id region pub_ip key".split(" ")
     return " ".join([inst[k] for k in keys if inst[k]])
+
 
 def save_in_s3(body):
     s3 = boto3.client('s3')
@@ -50,6 +54,7 @@ def save_in_s3(body):
     print "updated: s3://%s/instances.fzf" % BUCKET
 
 
+#pylint: disable=W0613
 def main(event, context):
     client = boto3.client('ec2')
     regions = client.describe_regions()
