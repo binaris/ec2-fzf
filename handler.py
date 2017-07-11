@@ -7,6 +7,8 @@ BUCKET = os.environ["bucket"]
 
 
 def extract_tag(instance_desc, tag):
+    if 'Tags' not in instance_desc:
+        return ""
     t = [t for t in instance_desc['Tags'] if t['Key'] == tag]
     return t[0]['Value'] if t else ""
 
@@ -27,17 +29,27 @@ def extract_relevant_instance_info(instance_description):
 def instances_by_region(region):
     try:
         ec2 = boto3.client('ec2', region_name=region)
+        print "Looking up instances in %s" % region
 
         instance_info = []
         for res in ec2.describe_instances()['Reservations']:
+            print "Parsing reservation with %d instances..." % (len(res['Instances']))
             for i in res['Instances']:
-                e = extract_relevant_instance_info(i)
-                e['region'] = region
-                if e['pub_ip']:
-                    instance_info.append(e)
+                try:
+                    e = extract_relevant_instance_info(i)
+                    e['region'] = region
+                    if e['pub_ip']:
+                        instance_info.append(e)
+                        print e
+                    else:
+                        print "Instance %s doesn't have a public IP address." % i['InstanceId']
+                except Exception as e:
+                    print "Failed to parse instance :(", e
 
+        print "Found %d instances" % len(instance_info)
         return instance_info
     except Exception as e:
+        print e
         return []
 
 
