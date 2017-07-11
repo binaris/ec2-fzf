@@ -1,11 +1,15 @@
 #!/bin/bash -e
 
+
+BUCKET=ec2-cache.binaris.com
+
 # Requirements:
 # - fzf
 # - aws cli
 
 function get_cache() {
-    aws s3 cp --quiet s3://ec2-cache.binaris.com/instances.fzf >(cat)
+    # Set you bucket name here
+    aws s3 cp --quiet s3://$BUCKET/instances.fzf >(cat)
 }
 
 chosen=$(get_cache | fzf)

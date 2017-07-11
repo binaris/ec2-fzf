@@ -41,6 +41,7 @@ You can tweak the following to suit your organization.
 Look in `servereless.yml` for the `custom` object and tweak it.
 
 1. You should change the bucket name to include your organization's name. The default won't work for you, since bucket name are universal.
+    1. Update the `BUCKET` variable in the file `ec2` as well.
 1. You can change the IAM group name (default is `dev`) that's allowed to see the list of instances this tool caches.
 1. You can specify the list of tags that are relevant for finding instances in your account. The defaults are relevant to Binaris (`realm`, `service`, ...), so you probably want to change this if you're not part of our team. :)
 
