@@ -2,6 +2,7 @@
 
 
 BUCKET=ec2-cache.binaris.com
+DEFAULT_USER=ubuntu
 
 # Requirements:
 # - fzf
@@ -17,4 +18,4 @@ chosen=$(get_cache | fzf)
 export key=$(echo $chosen | rev | cut -d ' ' -f1 | rev)
 export ip=$(echo $chosen | rev | cut -d ' ' -f2 | rev)
 
-ssh -i ~/.ssh/$key.pem ubuntu@$ip
+ssh -i ~/.ssh/$key.pem $DEFAULT_USER@$ip
