@@ -25,7 +25,7 @@ The bucket is accessible only to the IAM group `dev`. Tweak this with your org's
 1. And of course your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_ID` envars should be defined.
 1. Clone this repo, and add its directory to your `$PATH`.
 
-## The Lambda
+## The Lambda (only once per organization)
 
 You'll see `serverless` installed, and permissions to manage Lambda in your AWS account.
 
