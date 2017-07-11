@@ -3,6 +3,7 @@
 
 BUCKET=ec2-cache.binaris.com
 DEFAULT_USER=ubuntu
+DEFAULT_FZF_QUERY=$realm
 
 # Requirements:
 # - fzf
@@ -13,7 +14,7 @@ function get_cache() {
     aws s3 cp --quiet s3://$BUCKET/instances.fzf >(cat)
 }
 
-chosen=$(get_cache | fzf)
+chosen=$(get_cache | fzf -q $DEFAULT_FZF_QUERY)
 
 export key=$(echo $chosen | rev | cut -d ' ' -f1 | rev)
 export ip=$(echo $chosen | rev | cut -d ' ' -f2 | rev)
