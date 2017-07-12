@@ -38,8 +38,18 @@ functions:
     handler: handler.main
     events:
       - schedule:
-          rate: rate(1 minute)
+          rate: rate(1 hour)
           enabled: true
+      - cloudwatchEvent:
+          event:
+            source:
+              - "aws.ec2"
+            detail-type:
+              - "EC2 Instance State-change Notification"
+            detail:
+              state:
+                - stopped
+                - running
 
     environment:
         bucket: ${self:custom.bucket}
