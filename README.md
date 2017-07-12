@@ -24,6 +24,7 @@ The bucket is accessible only to the IAM group `dev`. Tweak this with your org's
 1. You'll also need the AWS CLI installed locally (`pip install awscli`).
 1. And of course your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_ID` envars should be defined.
 1. Clone this repo, and add its directory to your `$PATH`.
+1. The CLI assumes that your SSH keys exist in `~/.ssh/[KeyName].pem`.
 
 ## The Lambda (only once per organization)
 
