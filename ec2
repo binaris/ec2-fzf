@@ -18,5 +18,6 @@ chosen=$(get_cache | fzf -q $DEFAULT_FZF_QUERY)
 
 export key=$(echo $chosen | rev | cut -d ' ' -f1 | rev)
 export ip=$(echo $chosen | rev | cut -d ' ' -f2 | rev)
+echo $chosen
 
 ssh -i ~/.ssh/$key.pem $DEFAULT_USER@$ip
