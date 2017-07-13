@@ -3,7 +3,7 @@
 
 BUCKET=ec2-cache.binaris.com
 DEFAULT_USER=ubuntu
-DEFAULT_FZF_QUERY=$realm
+DEFAULT_FZF_QUERY=${realm:-$USER}
 
 # Requirements:
 # - fzf
