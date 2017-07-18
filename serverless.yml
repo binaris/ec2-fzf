@@ -14,8 +14,8 @@ provider:
   timeout: 30
   memorySize: 128
 
-  stage: prod
-  region: eu-central-1
+  # Yes the stage name is the region. We want to run the lambda on multiple regions.
+  stage: eu-central-1
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -40,6 +40,8 @@ functions:
       - schedule:
           rate: rate(1 hour)
           enabled: true
+          input:
+              activation: cron
       - cloudwatchEvent:
           event:
             source:
@@ -57,11 +59,6 @@ functions:
 
 resources:
   Resources:
-    CacheBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-          BucketName: ${self:custom.bucket}
-    DeveloperBucketAccess:
       Type: AWS::IAM::Policy
       Properties:
           Groups: ["${self:custom.group}"]

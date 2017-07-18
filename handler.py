@@ -59,7 +59,7 @@ def instance_line(inst):
 
 
 def save_in_s3(body):
-    s3 = boto3.client('s3')
+    s3 = boto3.client('s3', region_name='eu-central-1')
     s3.put_object(Bucket=BUCKET,
                   Key='instances.fzf',
                   Body=body.encode('utf-8'))
@@ -68,6 +68,7 @@ def save_in_s3(body):
 
 #pylint: disable=W0613
 def main(event, context):
+    print json.dumps(event)
     client = boto3.client('ec2')
     regions = client.describe_regions()
     region_names = [r["RegionName"] for r in regions["Regions"]]
