@@ -59,6 +59,7 @@ functions:
 
 resources:
   Resources:
+    DeveloperBucketAccess:
       Type: AWS::IAM::Policy
       Properties:
           Groups: ["${self:custom.group}"]
