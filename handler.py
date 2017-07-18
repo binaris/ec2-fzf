@@ -20,6 +20,7 @@ def extract_relevant_instance_info(instance_description):
         "pub_ip": i.get("PublicIpAddress"),
         "priv_ip": i.get("PrivateIpAddress"),
         "key": i.get("KeyName"),
+        "launched": i.get("LaunchTime").isoformat()
     }
     for k in KEYS:
         r[k] = extract_tag(i, k)
@@ -54,7 +55,7 @@ def instances_by_region(region):
 
 
 def instance_line(inst):
-    keys = KEYS + "priv_ip id region pub_ip key".split(" ")
+    keys = KEYS + "priv_ip id region launched pub_ip key".split(" ")
     return " ".join([inst[k] for k in keys if inst[k]])
 
 
