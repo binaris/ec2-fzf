@@ -1,4 +1,5 @@
 import json
+import datetime
 import os
 import boto3
 
@@ -34,7 +35,7 @@ def instances_by_region(region):
 
         instance_info = []
         for res in ec2.describe_instances()['Reservations']:
-            print "Parsing reservation with %d instances..." % (len(res['Instances']))
+            print "Parsing reservation with %d instances in %s..." % (len(res['Instances']), region)
             for i in res['Instances']:
                 try:
                     e = extract_relevant_instance_info(i)
@@ -47,7 +48,7 @@ def instances_by_region(region):
                 except Exception as e:
                     print "Failed to parse instance :(", e
 
-        print "Found %d instances" % len(instance_info)
+        print "Found a total of %d instances in region %s" % (len(instance_info), region)
         return instance_info
     except Exception as e:
         print e
@@ -56,7 +57,7 @@ def instances_by_region(region):
 
 def instance_line(inst):
     keys = KEYS + "priv_ip id region launched pub_ip key".split(" ")
-    return " ".join([inst[k] for k in keys if inst[k]])
+    return " ".join(["%s:%s" % (k, inst[k]) for k in keys if inst[k]])
 
 
 def save_in_s3(body):
@@ -69,7 +70,7 @@ def save_in_s3(body):
 
 #pylint: disable=W0613
 def main(event, context):
-    print json.dumps(event)
+    print ("%s Input event: " + json.dumps(event)) % datetime.datetime.now().isoformat()
     client = boto3.client('ec2')
     regions = client.describe_regions()
     region_names = [r["RegionName"] for r in regions["Regions"]]

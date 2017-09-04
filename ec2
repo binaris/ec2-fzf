@@ -2,7 +2,6 @@
 
 
 BUCKET=ec2-cache.binaris.com
-DEFAULT_USER=ubuntu
 DEFAULT_FZF_QUERY=${1:-$realm}
 DEFAULT_FZF_QUERY=${DEFAULT_FZF_QUERY:-$USER}
 
@@ -15,10 +14,14 @@ function get_cache() {
     aws s3 cp --quiet s3://$BUCKET/instances.fzf >(cat)
 }
 
-chosen=$(get_cache | fzf -q $DEFAULT_FZF_QUERY)
+chosen=$(get_cache | fzf -q "$DEFAULT_FZF_QUERY")
 
-export key=$(echo $chosen | rev | cut -d ' ' -f1 | rev)
-export ip=$(echo $chosen | rev | cut -d ' ' -f2 | rev)
+export key=$(echo $chosen | grep -o -E "key:\\S+" | cut -d ':' -f2)
+export ip=$(echo $chosen | grep -o -E "pub_ip:\\S+" | cut -d ':' -f2)
+if echo $chosen | grep -E "default_user:" >/dev/null; then
+    export DEFAULT_USER=$(echo $chosen | grep -o -E "default_user:\\S+" | cut -d ':' -f2)
+fi
+
 echo $chosen
 
-ssh -i ~/.ssh/$key.pem $DEFAULT_USER@$ip
+ssh -i ~/.ssh/$key.pem ${DEFAULT_USER:-ubuntu}@$ip
