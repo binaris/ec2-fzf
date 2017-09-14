@@ -14,14 +14,38 @@ function get_cache() {
     aws s3 cp --quiet s3://$BUCKET/instances.fzf >(cat)
 }
 
-chosen=$(get_cache | fzf -q "$DEFAULT_FZF_QUERY")
+cache=$(get_cache)
+export chosen=$(echo "$cache" | fzf -q "$DEFAULT_FZF_QUERY")
 
-export key=$(echo $chosen | grep -o -E "key:\\S+" | cut -d ':' -f2)
-export ip=$(echo $chosen | grep -o -E "pub_ip:\\S+" | cut -d ':' -f2)
+function lookup() {
+    chosen=$1
+    field=$2
+    echo $chosen | grep -o -E "$field:\\S+" | cut -d ':' -f2
+}
+
+export key=$(lookup "$chosen" key)
+export pub_ip=$(lookup "$chosen" pub_ip)
+export priv_ip=$(lookup "$chosen" priv_ip)
+export realm=$(lookup "$chosen" realm)
+
 if echo $chosen | grep -E "default_user:" >/dev/null; then
-    export DEFAULT_USER=$(echo $chosen | grep -o -E "default_user:\\S+" | cut -d ':' -f2)
+    export user=$(lookup "$chosen" default_user)
+else
+    export user=ubuntu
 fi
 
-echo $chosen
-
-ssh -i ~/.ssh/$key.pem ${DEFAULT_USER:-ubuntu}@$ip
+BASTION="kz8s-${realm}-bastion"
+if echo $chosen | grep -E "ssh:bastion" >/dev/null; then
+    export bastion=$(echo "$cache" | fzf -q "$BASTION" -e -1 --prompt="Select your bastion: ")
+    export bastion_pub_ip=$(lookup "$bastion" pub_ip)
+    echo "Using bastion ($bastion_pub_ip) to connect..."
+    if echo $bastion | grep -E "default_user:" >/dev/null; then
+        export DEFAULT_USER=$(lookup "$bastion" default_user)
+    fi
+    export ip=$priv_ip
+    export proxy_command="ssh -i ~/.ssh/$key.pem -W %h:%p $DEFAULT_USER@$bastion_pub_ip"
+    ssh -i ~/.ssh/$key.pem -o ProxyCommand="$proxy_command" $user@$ip
+else
+    export ip=$pub_ip
+    ssh -i ~/.ssh/$key.pem $user@$ip
+fi
