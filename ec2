@@ -14,8 +14,22 @@ function get_cache() {
     aws s3 cp --quiet s3://$BUCKET/instances.fzf >(cat)
 }
 
-cache=$(get_cache)
-export chosen=$(echo "$cache" | fzf -q "$DEFAULT_FZF_QUERY")
+function choose() {
+    cache="$(get_cache)"
+    echo -e "$cache\n%refresh ec2 cache" | fzf -q "$DEFAULT_FZF_QUERY"
+}
+
+while true; do
+    export chosen=$(choose)
+    if [[ -z "$chosen" ]]; then
+        exit 1
+    elif [[ "$chosen" == "%refresh ec2 cache" ]]; then
+        echo "Refreshing EC2 fuzzy cache..."
+        aws lambda invoke --function-name ec2-fzf-eu-central-1-discover_instances /dev/null >/dev/null
+    else
+        break
+    fi
+done
 
 function lookup() {
     chosen=$1
