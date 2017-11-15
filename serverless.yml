@@ -4,7 +4,7 @@ custom:
     # Choose your bucket name here, it will be created for you.
     bucket: ec2-cache.binaris.com
     # Specify a list of relevant tags for finding instances (space separated)
-    tags: "realm service Name default_user ssh"
+    tags: "realm service Name default_user ssh hostname"
     # SSH IAM Group (IAM group that should be allowed to use this tool)
     group: "dev"
 

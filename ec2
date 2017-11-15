@@ -24,7 +24,7 @@ while true; do
         exit 1
     elif [[ "$chosen" == "%refresh ec2 cache" ]]; then
         echo "Refreshing EC2 fuzzy cache..."
-        aws lambda invoke --function-name ec2-fzf-eu-central-1-discover_instances /dev/null >/dev/null
+        aws lambda invoke --region ${region:-eu-central-1} --function-name ec2-fzf-${region:-eu-central-1}-discover_instances /dev/null >/dev/null
     else
         break
     fi
