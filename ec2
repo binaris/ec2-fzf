@@ -57,8 +57,8 @@ if echo $chosen | grep -E "ssh:bastion" >/dev/null; then
     fi
     export ip=$priv_ip
     export proxy_command="ssh -i ~/.ssh/$key.pem -W %h:%p $DEFAULT_USER@$bastion_pub_ip"
-    ssh -i ~/.ssh/$key.pem -o ProxyCommand="$proxy_command" $user@$ip
+    exec ssh -i ~/.ssh/$key.pem -o ProxyCommand="$proxy_command" $user@$ip
 else
     export ip=$pub_ip
-    ssh -i ~/.ssh/$key.pem $user@$ip
+    exec ssh -i ~/.ssh/$key.pem $user@$ip
 fi
