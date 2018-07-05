@@ -38,7 +38,7 @@ functions:
     handler: handler.main
     events:
       - schedule:
-          rate: rate(1 hour)
+          rate: rate(10 minutes)
           enabled: true
           input:
               activation: cron
